@@ -12,5 +12,4 @@ https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/getting-star
 
 ## Using this extension
 1. The entension will showup as an "M" icon
-2. After selecting "M" please allow up to ~4 seconds for all links to load
-3. JQuery styling/refresh takes a moment to update elements
+2. After selecting "M", use the quick filter to search or simply select the drop down links
