@@ -37,38 +37,26 @@ async function displayhtml() {
     let object = await Promise.all(jsons);
     object = object.flat();
 
-    console.log(object);
-
     // display html logic here
-    let mainContainer = document.getElementById('set');
+    printHTML(object);
+}
 
-    //console.log(mainContainer);
+function printHTML(object) {
+	let mainContainer = document.getElementById('set');
 
     // print groupNames
     for (let i = 0; i < object.length; i++) {
-        // create div container foreach groupName
-        let div_c_groupName = document.createElement("div");
-        div_c_groupName.setAttribute("data-role", "collapsible");
-        div_c_groupName.setAttribute("data-mini", "true");
-        div_c_groupName.setAttribute("data-icon", "false");
-        //div_c_groupName.setAttribute(
+        // foreach groupName create details
+        let div_c_groupName = document.createElement("details");
+		div_c_groupName.setAttribute('class','portal-group');
         mainContainer.append(div_c_groupName);
 
-        // create header foreach groupName
-        let h_groupName = document.createElement("h2");
+        // foreach groupName create summary
+        let h_groupName = document.createElement("summary");
         h_groupName.innerHTML = object[i].groupName;
 
-        // attach header foreach div container
+        // attach groupName to summary tag
         div_c_groupName.appendChild(h_groupName);
-
-        // create list groupName container
-        let ul_portalname = document.createElement("ul");
-        ul_portalname.setAttribute("data-role", "listview");
-        ul_portalname.setAttribute("data-inset", "true");
-        ul_portalname.setAttribute("data-shadow", "false");
-        ul_portalname.setAttribute("data-mini", "true");
-        ul_portalname.setAttribute("data-icon", "false");
-        div_c_groupName.appendChild(ul_portalname);
 
         // print portalNames
         const portals = object[i].portals;
@@ -81,44 +69,34 @@ async function displayhtml() {
                 primaryURL,
                 note = ''
             } = portals[z];
-
-            // create list item and append portalName and links
-            let li_portalname = document.createElement("li");
-            li_portalname.setAttribute("data-role", "collapsible");
-            li_portalname.setAttribute("data-iconpos", "left");
-            li_portalname.setAttribute("data-inset", "false");
-            li_portalname.setAttribute("data-theme", "b");
-            li_portalname.setAttribute("data-icon", "false");
-            ul_portalname.appendChild(li_portalname);
-
-
-
-            // print portalName
-            let h_portalName = document.createElement("h3");
-            h_portalName.innerHTML = portalName + ' ' + note;
-            li_portalname.appendChild(h_portalName);
-
-            // create list URL container
-            let ul_linkcontainer = document.createElement("ul");
-            ul_linkcontainer.setAttribute("data-role", "listview");
-            ul_linkcontainer.setAttribute("data-theme", "a");
-            li_portalname.appendChild(ul_linkcontainer);
-
-            // create list item and append to URL container
+			
+			// foreach portalName create details
+			let details_portalname = document.createElement("details");
+			details_portalname.setAttribute('class','portal');
+			div_c_groupName.appendChild(details_portalname);
+			
+            // foreach portalName create summary
+            let li_portalname = document.createElement("summary");
+			li_portalname.innerHTML = portalName + ' ' + note;
+            details_portalname.appendChild(li_portalname);
+			
+			// create URL container
+			let ul_linkcontainer = document.createElement("ul");
+			details_portalname.appendChild(ul_linkcontainer);
+			
+			// create list item and append to URL container
             let li = document.createElement('li');
-            li.setAttribute("data-icon", "false");
             ul_linkcontainer.appendChild(li);
 
             // create link and append to list item
             let link = document.createElement('a');
-            link.setAttribute("target", "_blank");
-            link.setAttribute("rel", "noopener noreferrer");
+			link.setAttribute("target", "_blank");
+			link.setAttribute("rel", "noopener noreferrer");
             li.appendChild(link);
 
             // set link as primaryURL
             link.href = primaryURL;
             link.innerText = primaryURL;
-
 
             // print portal secondaryURLs if any
             if (portals[z].secondaryURLs) {
@@ -126,13 +104,12 @@ async function displayhtml() {
                 for (let y = 0; y < secondaryURLs.length; y++) {
                     // create list item and append to URL container
                     let li = document.createElement('li');
-                    li.setAttribute("data-icon", "false");
                     ul_linkcontainer.appendChild(li);
 
                     // create link and append to list item
                     let link = document.createElement('a');
-                    link.setAttribute("target", "_blank");
-                    link.setAttribute("rel", "noopener noreferrer");
+					link.setAttribute("target", "_blank");
+					link.setAttribute("rel", "noopener noreferrer");
                     li.appendChild(link);
 
                     // set link as secondarURL
@@ -140,10 +117,8 @@ async function displayhtml() {
                     link.innerText = secondaryURLs[y].url
                 }
             }
-            $("[data-role=listview]").listview().listview('refresh');
         }
     }
-    $("[data-role=collapsibleset]").collapsibleset("refresh");
 }
 
 displayhtml();
