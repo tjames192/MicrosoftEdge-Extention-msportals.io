@@ -1,5 +1,5 @@
 # msportals extension
-This extension was built inspired by the works of msportals.io.
+This extension was built inspired by the works of [https://msportals.io](https://msportals.io).
 
 The goal was to create a convenient extension that would load every link into a searchable and collapsible list.
 
