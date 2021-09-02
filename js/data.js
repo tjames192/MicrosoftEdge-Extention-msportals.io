@@ -1,124 +1,99 @@
-let urls = [
-    'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/admin.json',
-    'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/user.json',
-    'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/thirdparty.json'
-];
+"use strict";
 
-/*
-Promise.all(
-	urls.map(url =>
-  	fetch(url)
-    	.then(e => e.json())
-	)
-)
-.then(data => {
-	finalResult = data.flat();
-	console.log('what is this result');
-  console.log(finalResult);
-  console.log('hopefully 1 array');
-  //document.write(finalResult);
-});
-*/
+console.clear();
 
+// make sure file is loaded before use
 async function getJson(url) {
-    let response = await fetch(url);
-    let content = await response.json();
+    const response = await fetch(url);
+    const content = await response.json();
 
     return content;
 }
 
+// combine async functions in a nice promise pattern
 async function displayhtml() {
+    const urls = [
+        'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/admin.json',
+        'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/user.json',
+        'https://raw.githubusercontent.com/adamfowlerit/msportals.io/master/_data/portals/thirdparty.json'
+    ];
+    
+    
     let jsons = [];
 
     for (const url of urls) {
-        jsons.push(getJson(url));
+        const data = getJson(url);
+        jsons.push(data);
     }
-
-    let object = await Promise.all(jsons);
-    object = object.flat();
-
-    // display html logic here
-    printHTML(object);
+    
+    return (await Promise.all(jsons)).flat();
 }
 
 function printHTML(object) {
-	let mainContainer = document.getElementById('set');
-
-    // print groupNames
-    for (let i = 0; i < object.length; i++) {
-        // foreach groupName create details
-        let div_c_groupName = document.createElement("details");
-		div_c_groupName.setAttribute('class','portal-group');
-        mainContainer.append(div_c_groupName);
-
-        // foreach groupName create summary
-        let h_groupName = document.createElement("summary");
-        h_groupName.innerHTML = object[i].groupName;
-
-        // attach groupName to summary tag
-        div_c_groupName.appendChild(h_groupName);
-
-        // print portalNames
-        const portals = object[i].portals;
-        for (let z = 0; z < portals.length; z++) {
-            // JS object destructuring - https://dmitripavlutin.com/javascript-object-destructuring/
-            // print a default value for 'undefined' properties of an object.
-            // https://dmitripavlutin.com/7-tips-to-handle-undefined-in-javascript/
-            const {
-                portalName,
-                primaryURL,
-                note = ''
-            } = portals[z];
-			
-			// foreach portalName create details
-			let details_portalname = document.createElement("details");
-			details_portalname.setAttribute('class','portal');
-			div_c_groupName.appendChild(details_portalname);
-			
-            // foreach portalName create summary
-            let li_portalname = document.createElement("summary");
-			li_portalname.innerHTML = portalName + ' ' + note;
-            details_portalname.appendChild(li_portalname);
-			
-			// create URL container
-			let ul_linkcontainer = document.createElement("ul");
-			details_portalname.appendChild(ul_linkcontainer);
-			
-			// create list item and append to URL container
-            let li = document.createElement('li');
-            ul_linkcontainer.appendChild(li);
-
-            // create link and append to list item
+    const mainContainer = document.getElementById('set');
+    
+    for (const msportals of object) {
+        //console.log(msportals);
+        let portalGroup = document.createElement("details");
+        portalGroup.setAttribute('class','portal-group');
+        mainContainer.append(portalGroup);
+        
+        let groupName = document.createElement("summary");
+        groupName.innerHTML = msportals.groupName;
+        portalGroup.appendChild(groupName);
+        
+        for (const portals of msportals.portals) {
+            //console.log(portals);
+            let portal = document.createElement("details");
+            portal.setAttribute('class','portal');
+            portalGroup.appendChild(portal);
+            
+            let portalName = document.createElement("summary");
+            const strPortalNote = portals.note ? ' ' + portals.note : '';
+            portalName.innerHTML = portals.portalName + strPortalNote;
+            portal.appendChild(portalName);
+            
+            let linkcontainer = document.createElement("ul");
+            portal.appendChild(linkcontainer);
+            
+            let listItem = document.createElement('li')
+            linkcontainer.appendChild(listItem);
+            
             let link = document.createElement('a');
-			link.setAttribute("target", "_blank");
-			link.setAttribute("rel", "noopener noreferrer");
-            li.appendChild(link);
-
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer");
             // set link as primaryURL
-            link.href = primaryURL;
-            link.innerText = primaryURL;
-
+            link.href = portals.primaryURL;
+            link.innerText = portals.primaryURL;
+            listItem.appendChild(link);
+            
             // print portal secondaryURLs if any
-            if (portals[z].secondaryURLs) {
-                const secondaryURLs = portals[z].secondaryURLs;
-                for (let y = 0; y < secondaryURLs.length; y++) {
-                    // create list item and append to URL container
-                    let li = document.createElement('li');
-                    ul_linkcontainer.appendChild(li);
-
-                    // create link and append to list item
+            if (portals.secondaryURLs) {
+                for (const secondaryURL of portals.secondaryURLs) {
+                    let listItem = document.createElement('li');
+                    linkcontainer.appendChild(listItem);
+                    
                     let link = document.createElement('a');
-					link.setAttribute("target", "_blank");
-					link.setAttribute("rel", "noopener noreferrer");
-                    li.appendChild(link);
-
-                    // set link as secondarURL
-                    link.href = secondaryURLs[y].url
-                    link.innerText = secondaryURLs[y].url
+                    link.setAttribute("target", "_blank");
+                    link.setAttribute("rel", "noopener noreferrer");
+                    // set link as secondaryURL
+                    link.href = secondaryURL.url;
+                    link.innerText = secondaryURL.url;
+                    
+                    listItem.appendChild(link);
                 }
             }
         }
     }
 }
 
-displayhtml();
+const loadingEl = document.querySelector('.loading');
+displayhtml()
+    .then((msportals) => {
+        loadingEl.style.display = 'none';
+        printHTML(msportals);
+    })
+    .catch(error => { 
+        console.error('Failed to get json data from URLs');
+        loadingEl.style.display = 'none';
+    });
