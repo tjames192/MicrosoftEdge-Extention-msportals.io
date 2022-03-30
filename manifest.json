@@ -4,7 +4,7 @@
       "default_popup": "index.html",
       "default_title": "Microsoft Portals"
    },
-   "description": "Quick access to Microsoft 365 Admin Centres",
+   "description": "Quick access to Microsoft 365 Admin Centers",
    "homepage_url": "https://msportals.io/about/",
    "manifest_version": 2,
    "name": "Microsoft Portals",
